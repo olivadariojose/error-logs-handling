@@ -12,6 +12,13 @@
 npm i dotenv joi
 ```
 
+## MONGODB
+```bash
+npm i @nestjs/mongoose mongoose bcrypt --save-dev @types/bcrypt
+```
+```bash
+npm i --save class-validator class-transformer @types/bcrypt
+```
 
 
 
