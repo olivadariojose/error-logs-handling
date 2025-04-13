@@ -8,6 +8,5 @@ content-type: application/json
     "rol": "admin"
 }
 
-
 ### GET CLOUDINARY IMAGE
 # GET http://localhost:4000/cloudinary/gallery
