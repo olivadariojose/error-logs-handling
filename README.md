@@ -20,5 +20,10 @@ npm i @nestjs/mongoose mongoose bcrypt --save-dev @types/bcrypt
 npm i --save class-validator class-transformer @types/bcrypt
 ```
 
+## WINSTON-MONGODB
+```
+npm i winston winston-mongodb
+```
+
 
 

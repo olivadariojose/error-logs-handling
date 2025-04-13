@@ -5,13 +5,17 @@ import { Model } from 'mongoose';
 import { User } from './entities/user.entity';
 import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt'
+import { WinstonmongodbService } from 'src/winstonmongodb/winstonmongodb.service';
 
 @Injectable()
 export class UsersService {
 
+  private readonly serviceName = UsersService.name
+
   constructor(
     @InjectModel(User.name)
-    private readonly userEntity: Model<User>
+    private readonly userEntity: Model<User>,
+    private readonly logService : WinstonmongodbService,
   ) { }
 
 
@@ -24,6 +28,11 @@ export class UsersService {
       const usuarioExistente = await this.userEntity.findOne({ email })
 
       if (usuarioExistente) {
+        this.logService.error({
+          serviceName:this.serviceName ,
+          serviceMethod:'create',
+          message:'Ya existe un usuario con ese correo'
+        })
         throw new ConflictException('Ya existe un usuario con ese correo')
       }
 
