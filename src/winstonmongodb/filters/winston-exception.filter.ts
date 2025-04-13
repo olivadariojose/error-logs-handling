@@ -2,6 +2,7 @@ import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus } from
 import { Response } from 'express';
 import { WinstonmongodbService } from '../winstonmongodb.service';
 
+
 @Catch()
 export class WinstonExceptionFilter implements ExceptionFilter {
     constructor(private readonly logger: WinstonmongodbService) { }
@@ -25,7 +26,8 @@ export class WinstonExceptionFilter implements ExceptionFilter {
         this.logger.error({
             serviceName: 'WinstonExceptionFilter',
             serviceMethod: 'WinstonExceptionFilter',
-            message: message
+            message: message,
+            trace: JSON.stringify(message)
         })
 
         response.status(status).json({

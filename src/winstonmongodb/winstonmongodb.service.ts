@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import * as winston from 'winston';
 import * as path from 'path';
+import * as fs from 'fs';
 import 'winston-mongodb'
 import { envs } from 'src/config/envs';
 import { LoggerPayload } from './interfaces/interfaces';
+import * as DailyRotateFile from 'winston-daily-rotate-file';
 
 const customLevels = {
     levels: {
@@ -31,9 +33,36 @@ export class WinstonmongodbService {
 
     constructor() {
 
+
+
         const logsDir = 'logs'
         const rootPath = process.cwd()
-        const logsDirPath = path.join(rootPath, logsDir)
+        const logsDirPath = path.join(rootPath, logsDir,)
+
+
+        const now = new Date()
+        const year = now.getFullYear().toString()
+        const month = (now.getMonth()+1).toString().padStart(2,'0')
+        const day = now.getDate().toString().padStart(2,'0')
+        const fullDirPath = path.join(logsDirPath, year, month, day);
+        fs.mkdirSync(fullDirPath, { recursive: true });
+
+        const transportRotatingFile = new DailyRotateFile({
+            level: 'http',
+            // filename: '%DATE%/application.log', // esto crea subcarpetas por fecha
+            filename: 'application.log', // esto crea subcarpetas por fecha
+            // datePattern: 'YYYY/MM/DD',          // subdirectorios por año, mes y día
+            // dirname: logsDir,
+            dirname: fullDirPath,
+            zippedArchive: false,
+            maxSize: '50m',
+            // los archivos mas antiguos que 14 dias seran elimiandos
+            maxFiles: '14d',
+            format: winston.format.uncolorize(),
+          });
+          transportRotatingFile.on('error', (err) => {
+            console.error('Error in DailyRotateFile transport:', err);
+          });
 
         this.logger = winston.createLogger({
             level: 'debug',
@@ -45,12 +74,13 @@ export class WinstonmongodbService {
                 })
             ),
             transports: [
-                new winston.transports.File({
-                    level: 'http',
-                    filename: 'application.log',
-                    dirname: logsDirPath,
-                    format: winston.format.uncolorize()
-                }),
+                transportRotatingFile,
+                // new winston.transports.File({
+                //     level: 'http',
+                //     filename: 'application.log',
+                //     dirname: logsDirPath,
+                //     format: winston.format.uncolorize()
+                // }),
                 new winston.transports.MongoDB({
                     level: 'http',
                     db: envs.mongodburi,

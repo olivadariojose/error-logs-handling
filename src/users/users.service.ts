@@ -48,7 +48,6 @@ export class UsersService {
       return userWithoutPassowrd
 
     } catch (error) {
-      console.log(error)
       throw new InternalServerErrorException('Error al crear el usuario')
     }
 
